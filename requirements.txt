@@ -1,0 +1,21 @@
+# Dependencies for "Optimizing Heat Flux Density for Solar Tower Power Plants".
+# These are the exact versions used for the run that produced the results reported
+# in the manuscript (Python 3.12). Verified to install and import cleanly together
+# in a fresh environment. If your Python is older than 3.10, relax the numpy/scipy
+# pins -- these versions require a recent interpreter.
+
+numpy==2.4.4
+scipy==1.17.1
+clarabel==0.11.1       # interior-point QP solver, called directly (see Sec. 8)
+matplotlib==3.10.8
+
+# Notebook runtime
+jupyterlab==4.6.0
+ipykernel==7.3.0
+
+# Not required. CVXPY was used only to cross-validate the fast QP assembly against
+# a dense reference formulation; the notebook as shipped does not import it.
+# cvxpy==1.9.2
+
+# Only needed to rebuild the notebook programmatically, not to run it.
+# nbformat==5.10.4

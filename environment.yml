@@ -1,0 +1,20 @@
+name: solar-main
+# Conda environment for "Optimizing Heat Flux Density for Solar Tower Power Plants".
+# conda provides Python + pip; pip installs the exact pinned versions verified to
+# resolve together (identical to requirements.txt), which keeps the reproducibility
+# guarantee while staying conda-managed.
+#   conda env create -f environment.yml
+#   conda activate solar-main
+#   python -m ipykernel install --user --name solar-main --display-name "Python (solar-main)"
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - numpy==2.4.4
+      - scipy==1.17.1
+      - clarabel==0.11.1      # interior-point QP solver, called directly
+      - matplotlib==3.10.8
+      - jupyterlab==4.6.0
+      - ipykernel==7.3.0

@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite the associated article below.
+title: >-
+  Optimizing Heat Flux Density for Solar Tower Power Plants:
+  A Novel HFLCAL Linearization Approach
+abstract: >-
+  Reference implementation of a convex aim-point correction method for solar
+  tower power plants with cylindrical receivers. Linearizing the HFLCAL flux
+  model about a structurally misaligned aim-point configuration turns flux
+  shaping under a hard allowable-flux-density constraint into a quadratic
+  program, solved to certified global optimality over all 5,300 correction
+  variables at full Gemasolar scale.
+type: software
+authors:
+  - family-names: Sajedi-Hosseini
+    given-names: Daniyal
+    affiliation: Tokyo University of Agriculture and Technology
+  - family-names: Shen
+    given-names: Xun
+    affiliation: Tokyo University of Agriculture and Technology
+repository-code: 'https://github.com/danialsj77/csp-convex-qp'
+license: MIT
+keywords:
+  - concentrated solar power
+  - solar power tower
+  - heliostat aiming
+  - convex optimization
+  - quadratic programming
+  - HFLCAL
+preferred-citation:
+  type: article
+  title: >-
+    Optimizing Heat Flux Density for Solar Tower Power Plants:
+    A Novel HFLCAL Linearization Approach
+  authors:
+    - family-names: Sajedi-Hosseini
+      given-names: Daniyal
+      affiliation: Tokyo University of Agriculture and Technology
+    - family-names: Shen
+      given-names: Xun
+      affiliation: Tokyo University of Agriculture and Technology
+  year: 2026
+  notes: Manuscript under review.
