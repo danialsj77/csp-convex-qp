@@ -9,8 +9,8 @@ abstract: >-
   tower power plants with cylindrical receivers. Linearizing the HFLCAL flux
   model about a structurally misaligned aim-point configuration turns flux
   shaping under a hard allowable-flux-density constraint into a quadratic
-  program, solved to certified global optimality over all 5,300 correction
-  variables at full Gemasolar scale.
+  program, solved to global optimality of the linearized problem over all
+  5,300 correction variables at full Gemasolar scale.
 type: software
 authors:
   - family-names: Sajedi-Hosseini
@@ -41,4 +41,4 @@ preferred-citation:
       given-names: Xun
       affiliation: Tokyo University of Agriculture and Technology
   year: 2026
-  notes: Manuscript under review.
+  notes: Manuscript under revision (Renewable Energy, RENE-D-26-10794).

@@ -1,85 +1,84 @@
-# Model equations -- transcribed from the manuscript
+# Model equations
 
-Equation numbers match the manuscript draft so code comments can point back to them.
+The equations implemented in `solar_tower_qp.ipynb`, numbered as in the revised manuscript.
 
-## Eq. (4)-(5): HFLCAL flux density
-Single heliostat k, aim-point (x0_t,k, y0_t,k), receiver coords (x,y):
+## HFLCAL flux density, Eqs. (4)-(5)
 
-    F_k(x,y) = P_H,k / (2*pi*sigma_HF^2) * exp( -[(x-x0_t,k)^2 + (y-y0_t,k)^2] / (2*sigma_HF^2) )
+Heliostat *k* with aim-point (x⁰ₜ,ₖ, y⁰ₜ,ₖ) on the unwrapped receiver, receiver coordinates (x, y):
 
-Total flux = sum over k=1..K of F_k(x,y).
+    F_k(x, y) = P_H,k / (2 π σ_HF,k²) · exp( −[(x − x⁰ₜ,ₖ)² + (y − y⁰ₜ,ₖ)²] / (2 σ_HF,k²) )
+    F_total(x, y) = Σ_k F_k(x, y)
 
-## Eq. (6): structural misalignment displacement
-Given angular misalignment (xi_x,k, xi_y,k):
+Circumferential distances are taken the shorter way around the cylinder (periodic receiver).
 
-    x_mis,k = D * tan(xi_x,k)
-    y_mis,k = (H_T - H_M - Z_H) - D_M,k * tan(lambda_k - xi_y,k)
+## Structural misalignment, Eq. (6)
 
-where D_M,k = horizontal distance from heliostat k to tower base, lambda_k = angle
-between D_M,k and horizontal axis, H_T = tower height, H_M = heliostat center
-height, Z_H = heliostat base height.
+(ξ_x,k, ξ_y,k) are deviations of the **reflected beam**. A tilt θ of the mirror normal deflects the
+beam by 2θ within the plane of incidence and by 2θ·cos β_k perpendicular to it.
 
-## Eq. (7)-(11): linearization (first-order Taylor expansion around nominal aim-point)
-Perturbed flux at pixel (i,j) from heliostat k, with correction (delta_x_tk, delta_y_tk):
+    x_mis,k = D_k · tan ξ_x,k
+    y_mis,k = (D_M,k − R_rec) · [ tan(λ_k + ξ_y,k) − tan λ_k ]
+    tan λ_k = (H_T + y⁰ₜ,ₖ − Z_H − H_M) / (D_M,k − R_rec)
 
-    F_hat_ij(z) = P_h/(2*pi*sigma_HF^2) * exp( -[(x*_tj - x0_tk - dx_tk)^2 + (y*_ti - y0_tk - dy_tk)^2] / (2*sigma_HF^2) )
+D_k = slant range, D_M,k = horizontal distance to the tower axis, R_rec = receiver radius,
+H_T = tower optical height, Z_H = heliostat base height, H_M = mirror-center height.
 
-### VALIDATED correct sensitivity coefficients (use these, NOT the manuscript's Eq. 9-10)
-The manuscript's Eq. (9)/(10) carry a leading MINUS sign and drop the
-C = P/(2*pi*sigma^2) factor. That is the sign/factor bug from earlier versions.
-The mathematically correct first-order coefficients -- confirmed by finite-difference
-check against the true nonlinear flux (rel err ~1e-3, 100% sign agreement) -- are:
+In the simulations the residual is specified directly as a displacement Δ_mech = 1 m for every heliostat,
+directed so that the displaced aim-points converge onto the meridian at azimuth ψ:
 
-    F0_pk  = C_k * exp(-[(x*_p - x0m_k)^2 + (y*_p - y0m_k)^2]/(2*sigma_k^2))   (nominal flux at pixel p)
-    A_x[p,k] = F0_pk * (x*_p - x0m_k) / sigma_k^2        # POSITIVE sign, includes C via F0
-    A_y[p,k] = F0_pk * (y*_p - y0m_k) / sigma_k^2
+    (x̄ₜ,ₖ − x⁰ₜ,ₖ, ȳₜ,ₖ − y⁰ₜ,ₖ) = Δ_mech · ( −sin(θ_k − ψ), cos(θ_k − ψ) )
 
-Sign intuition: moving heliostat k's aim point toward a pixel (+x side) RAISES that
-pixel's flux, so the coefficient is positive when (x*_p - x0m_k) > 0. Any new
-implementation of these coefficients MUST be re-checked with the finite-difference
-test (perturb one heliostat's aim point by eps, compare numerical gradient to the
-analytic coefficient) before being trusted -- this is the decisive correctness gate.
+θ_k = heliostat azimuth, counter-clockwise from East. ψ = 90° (North) is the worst case for the plant
+studied (Section 5 of the notebook).
 
-Total linearized flux at pixel (i,j), affine in z:
+## Linearization, Eqs. (7)-(12)
 
-    F_tilde_ij(z) = F0_ij + sum_k [ A_x[ij,k]*dx_tk + A_y[ij,k]*dy_tk ]
+First-order expansion about the misaligned aim-points (x̄ₜ,ₖ, ȳₜ,ₖ), with the correction
+(δx_t,k, δy_t,k) as the expansion variable:
 
-(Note: the zeroth-order term is the nominal Gaussian flux F0_ij at that pixel, NOT
-the peak P/(2*pi*sigma^2); the manuscript writes the constant loosely.)
+    F⁰_ij,k  = P_H,k / (2 π σ_HF,k²) · exp( −[(x*_j − x̄ₜ,ₖ)² + (y*_i − ȳₜ,ₖ)²] / (2 σ_HF,k²) )
+    A_x,ij,k = F⁰_ij,k · (x*_j − x̄ₜ,ₖ) / σ_HF,k²
+    A_y,ij,k = F⁰_ij,k · (y*_i − ȳₜ,ₖ) / σ_HF,k²
+    F̃_ij(z)  = Σ_k F⁰_ij,k + Σ_k ( A_x,ij,k δx_t,k + A_y,ij,k δy_t,k )
 
-Valid for misalignments up to ~1 deg; re-linearize or go second-order for larger ones.
+The coefficients are checked against central finite differences of the exact flux (relative error of
+order 1e-3, 100 % sign agreement). Single-beam error of the affine model, s = ‖δ_k‖ / σ_HF,k:
 
-## Eq. (12): convex QP (the core contribution)
+    ε_ℓ2(s) = sqrt( 1 + (1 + s²/2)(1 − 2 exp(−s²/4)) ) ≈ (√3/4) s²
 
-    min_{dx_tk, dy_tk}  ||F_tilde(z) - F_ref||_2^2
-    s.t.  F_tilde_ij(z) <= F_max,   for all (i,j) in receiver pixel set
-          |dx_tk| <= dx_max,  k = 1..K
-          |dy_tk| <= dy_max,  k = 1..K
+## Convex QP, Eq. (13)
 
-Linear constraints + quadratic objective -> convex QP, globally solvable.
+    min_z   ‖ F̃(z) − F_ref ‖²
+    s.t.    F̃_ij(z) ≤ F_max,ij                      for all receiver pixels (i, j)
+            |δx_t,k| ≤ δx_max,  |δy_t,k| ≤ δy_max      k = 1..K
+            |ȳₜ,ₖ + δy_t,k| ≤ H_rec/2 − m · σ_HF,k     k = 1..K   (on-receiver bound, margin m)
 
-## Eq. (13): normalized pixel-wise error (uniformity metric)
+F̃ is affine in z, so the objective is a convex quadratic and every constraint is linear. F_max,ij may be
+uniform (1000 kW/m² in the main study) or vary over the receiver (Section 7 of the notebook). The flux
+constraints are imposed by constraint generation, and every reported metric is evaluated on the exact flux.
 
-    e = (F_tilde(z) - F_ref) / ||F_ref||_inf
+## Uniformity metric
 
-## Eq. (14)-(18): reflected power and beam spread (Appendix A)
+    CV = std(F) / mean(F)     over the illuminated receiver
 
-    P_H = I_D * A_H * cos(beta) * f_at * eta_ref * f_bs
+## Reflected power and beam spread, Eqs. (17)-(20) (Appendix C)
 
-    sigma_HF^2 = D^2 * (sigma_sun^2 + sigma_bq^2 + sigma_ast^2 + sigma_t^2) / cos(omega_p)
-    sigma_bq = (2*sigma_sun)^2
-    sigma_ast = sqrt(0.5*(H_t^2 + w_s^2)) / (4*D)
-    H_t = d*|D/f - cos(beta)|,   w_s = d*|D/f*cos(beta) - 1|
+    P_H,k     = I_D · A_H · cos β_k · f_at,k · η_ref · f_bs
+    σ_HF,k²   = D_k² · (σ_sun² + σ_bq² + σ_ast,k² + σ_t²) / cos ω_rec,k
+    σ_bq      = 2 σ_slope
+    σ_ast,k   = sqrt( 0.5 (H_t² + w_s²) ) / (4 D_k)
+    H_t       = d · |D_k / f − cos β_k|,   w_s = d · |D_k / f · cos β_k − 1|
 
-D = slant range (heliostat to receiver aim point), beta = angle between heliostat
-normal and solar direction, f = focal length, d = sqrt(heliostat area).
+β_k = incidence angle of the sun on the heliostat; ω_rec,k = incidence angle of the reflected ray on the
+receiver surface, cos ω_rec,k ≈ (D_M,k − R_rec) / D_k; d = sqrt(A_H); f = focal length (on-axis canting,
+f = D_k, gives H_t = w_s = d (1 − cos β_k)); f_bs = 1 (blocking and shading neglected).
 
-## Appendix C: solar position / sun-tracking geometry
-Full set of equations for solar azimuth/elevation (delta, omega, phi -> alpha, h),
-heliostat-tower-sun geometry (X_M, Y_M, Z_M, D_M), and reference tracking angles
-(A, H) for the heliostat. See manuscript Eqs. 20-25 if/when full diurnal tracking
-needs to be simulated. For the Phase-2 validation work (flux uniformity under
-misalignment), a single fixed snapshot (e.g. solar noon on 12 July 2022) is
-sufficient -- full day-trajectory simulation is Phase-1 territory and is explicitly
-*not* the focus of this paper (see manuscript Section 2.2, "Decoupling of the two
-phases").
+## Sun position
+
+Declination (Cooper) and hour angle ω give the sun vector in (East, North, Up):
+
+    S = ( −cos δ sin ω,  cos φ sin δ − sin φ cos δ cos ω,  sin φ sin δ + cos φ cos δ cos ω )
+
+## Clear-sky DNI (Hottel 1976), used only for the annual estimate
+
+    DNI = G_on · ( a0 + a1 · exp(−k / cos θ_z) ),  with the mid-latitude summer/winter corrections
