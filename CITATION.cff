@@ -16,6 +16,9 @@ authors:
   - family-names: Sajedi-Hosseini
     given-names: Daniyal
     affiliation: Tokyo University of Agriculture and Technology
+  - family-names: Fujisawa
+    given-names: Katsuki
+    affiliation: Institute of Science Tokyo
   - family-names: Shen
     given-names: Xun
     affiliation: Tokyo University of Agriculture and Technology
@@ -37,6 +40,9 @@ preferred-citation:
     - family-names: Sajedi-Hosseini
       given-names: Daniyal
       affiliation: Tokyo University of Agriculture and Technology
+    - family-names: Fujisawa
+      given-names: Katsuki
+      affiliation: Institute of Science Tokyo
     - family-names: Shen
       given-names: Xun
       affiliation: Tokyo University of Agriculture and Technology

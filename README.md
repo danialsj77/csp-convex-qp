@@ -2,9 +2,10 @@
 
 Reference implementation of the convex aim-point correction method described in
 
-> D. Sajedi-Hosseini and X. Shen, *"Optimizing Heat Flux Density for Solar Tower
+> D. Sajedi-Hosseini, K. Fujisawa and X. Shen, *"Optimizing Heat Flux Density for Solar Tower
 > Power Plants: A Novel HFLCAL Linearization Approach"*, Renewable Energy
-> (manuscript RENE-D-26-10794, under revision), Tokyo University of Agriculture and Technology.
+> (manuscript RENE-D-26-10794, under revision), Tokyo University of Agriculture and Technology
+> and Institute of Science Tokyo.
 
 Slow structural drift, such as foundation settlement, soil erosion and mechanical wear, misaligns
 heliostats. On a cylindrical receiver surrounded by a circular field, the displaced aim-points
